@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace cfg;
 
+use peps\core\Cfg;
+
 /**
  * Classe 100% statique de configuration de l'application pour le serveur local.
  * @see CfgApp
@@ -43,6 +45,8 @@ final class CfgLocal extends CfgApp
         // Durée de vie des sessions en secondes.
         self::register('sessionTimeout', 300);
         // Mode des sessions (PERSISTENT | HYBRID | ABSOLUTE).
-        self::register('sessionMode', 'TODO');
+        self::register('sessionMode', Cfg::get('SESSION_HYBRID'));
+        // Option "cookie_samesite" des sessions (STRICT | LAX | NONE).
+        self::register('cookieSameSite', Cfg::get('COOKIE_SAMESITE_STRICT'));
     }
 }

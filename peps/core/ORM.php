@@ -27,7 +27,7 @@ interface ORM
     /**
      * Supprime l'entité du système de stockage.
      *
-     * @return boolean True systématiquement.
+     * @return boolean True ou false selon que la persistance ai réussi ou non.
      */
     function remove(): bool;
 

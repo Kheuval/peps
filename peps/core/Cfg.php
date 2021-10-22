@@ -58,6 +58,18 @@ class Cfg
         self::register('NF_LOCALE_2DEC', (fn () => NumberFormatter::create(self::$constants['LOCALE'], NumberFormatter::PATTERN_DECIMAL, '#,##0.00'))());
         // Instance de NumberFormatter pour formater un nombre avec 2 décimales selon la norme US sans séparateur de milliers, typiquement pour les champs input de type number de certains navigateurs.
         self::register('NF_INPUT_2DEC', (fn () => NumberFormatter::create('en-US', NumberFormatter::PATTERN_DECIMAL, '0.00'))());
+        // Constante du mode PERSISTENT.
+        self::register('SESSION_PERSISTENT', 'SESSION_PERSISTENT');
+        // Constante du mode HYBRID.
+        self::register('SESSION_HYBRID', 'SESSION_HYBRID');
+        // Constante du mode ABSOLUTE.
+        self::register('SESSION_ABSOLUTE', 'SESSION_ABSOLUTE');
+        // Constante de l'option STRICT de "cookie_samesite" des sessions.
+        self::register('COOKIE_SAMESITE_STRICT', 'STRICT');
+        // Constante de l'option LAX de "cookie_samesite" des sessions.
+        self::register('COOKIE_SAMESITE_LAX', 'LAX');
+        // Constante de l'option NONE de "cookie_samesite" des sessions.
+        self::register('COOKIE_SAMESITE_NONE', 'NONE');
     }
 
     /**
