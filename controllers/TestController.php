@@ -6,6 +6,7 @@ namespace controllers;
 
 use entities\Category;
 use entities\Product;
+use entities\User;
 use peps\core\DBAL;
 use peps\core\Router;
 
@@ -30,6 +31,6 @@ final class TestController
      */
     public static function test(): void
     {
-        Router::render('test.php');
+        
     }
 }
