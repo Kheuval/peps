@@ -20,10 +20,7 @@ use peps\core\Cfg;
 </head>
 
 <body>
-    <a href="/">
-        <header>
-        </header>
-    </a>
+    <?php require 'views/inc/header.php' ?>
     <main>
         <?php foreach ($categories as $category) { ?>
             <div class="category">

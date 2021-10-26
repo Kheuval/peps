@@ -19,10 +19,7 @@ use peps\core\Cfg;
 </head>
 
 <body>
-    <a href="/">
-        <header>
-        </header>
-    </a>
+    <?php require 'views/inc/header.php' ?>
     <main>
         <div class="category">
             <a href="/">Accueil </a> &gt; Produit indisponible

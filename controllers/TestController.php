@@ -27,10 +27,15 @@ final class TestController
     /**
      * Méthode de test.
      * 
-     * GET /test/???
+     * GET /test
      */
     public static function test(): void
     {
-        
+        $user = new User();
+        $user->log = "tom";
+        $user->pwd = "tom";
+        $user->login();
+        sleep(30);
+        UserController::logout();
     }
 }

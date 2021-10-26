@@ -20,10 +20,7 @@ use peps\core\Cfg;
 </head>
 
 <body>
-    <a href="/">
-        <header>
-        </header>
-    </a>
+    <?php require 'views/inc/header.php' ?>
     <main>
         <div class="category">
             <a href="/product/list">Produits </a>&gt; <?= $product->name ?>
