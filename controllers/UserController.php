@@ -15,8 +15,10 @@ use peps\core\Router;
  */
 final class UserController
 {
-    // Messages d'erreur.
-    private const ERR_LOGIN = "Identifiant ou mot de passe absent";
+	// Messages d'erreur.
+	private const ERR_LOGIN = "Identifiant ou mot de passe absents ou invalides.";
+	private const ERR_INVALID_LOG = "Identifiant absent ou invalide.";
+	private const ERR_INVALID_HASH = "Lien invalide ou expiré.";
 
     /**
      * Constructeur privé.
@@ -70,6 +72,101 @@ final class UserController
     {
         // Détruire la session.
         session_destroy();
+        // Rediriger vers l'accueil.
+        Router::redirect('/');
+    }
+
+    /**
+     * Affiche la vue du mot de passe oublié.
+     * 
+     * GET /user/forgottenPwd
+     */
+    public static function forgottenPwd(): void
+    {
+        Router::render('forgottenPwd.php', ['log' => null]);
+    }
+
+	/**
+	 * Génère et envoie par email un lien destiné à saisir un nouveau mot de passe.
+	 *
+	 * GET /user/newPwd
+	 */
+	public static function newPwd(): void
+	{
+		// Initialiser le tableau des messages d'erreur.
+		$errors = [];
+		// Récupérer 'log'.
+		$log = filter_input(INPUT_POST, 'log', FILTER_SANITIZE_STRING) ?: null;
+		// Si 'log' inconnu, rendre la vue 'forgottenPwd.php'.
+		if (!$user = User::findOneBy(['log' => $log])) {
+			$errors[] = self::ERR_INVALID_LOG;
+			Router::render('forgottenPwd.php', ['log' => $log, 'errors' => $errors]);
+		}
+		// Générer un hash.
+		$hash = hash('sha1', microtime(), false);
+		// Stocker le hash et son timeout en DB.
+		$user->pwdHash = $hash;
+		$user->pwdTimeout = date('Y-m-d H:i:s', time() + 10 * 60);
+		$user->persist();
+		// Envoyer le lien par email.
+		$subject = 'ACME : Réinitialiser votre mot de passe';
+		$body = "Bonjour,
+Veuillez cliquer sur ce lien pour réinitialiser votre mot de passe (ce lien expire dans 10 minutes)
+http://acmepeps.local/user/setPwd/{$hash}";
+		mail($user->email, $subject, $body);
+		// Rediriger vers l'accueil'.
+		Router::redirect('/');
+	}
+
+    /**
+     * Affiche la vue permettant de saisir un nouveau mot de passe.
+     * 
+     * GET /user/setPwd/{hash}
+     *
+     * @param array $params Tableau des paramètres.
+     */
+    public static function setPwd(array $params): void
+    {
+        // Récupérer le hash.
+        $hash = $params['hash'];
+        // Si 'hash' absent ou inconnu, ou 'timeout' expiré, rendre la vue 'forgottenPwd.php'.
+        if (!$hash || !($user = User::findOneBy(['pwdHash' => $hash])) || $user->pwdTimeout < date('Y-m-d H:i:s')) {
+            $errors[] = self::ERR_INVALID_HASH;
+            Router::render('forgottenPwd.php', ['log' => null, 'errors' => $errors]);
+        }
+        // Rendre la vue.
+        Router::render('setPwd.php', ['hash' => $hash]);
+    }
+
+    /**
+     * Sauvegarde le nouveau mot de passe.
+     * 
+     * POST /user/savePwd
+     */
+    public static function savePwd(): void
+    {
+        // Récupérer le nouveau mot de passe et le hash.
+        $pwd = filter_input(INPUT_POST, 'pwd', FILTER_SANITIZE_STRING) ?: null;
+        $hash = filter_input(INPUT_POST, 'hash', FILTER_SANITIZE_STRING) ?: null;
+        // Si 'pwd' absent ou 'hash' absent ou 'timeout' expiré, rendre la vue 'forgottenPwd.php'.
+        if (!$pwd || !$hash || !($user = User::findOneBy(['pwdHash' => $hash])) || $user->pwdTimeout < date('Y-m-d H:i:s')) {
+            $errors[] = self::ERR_INVALID_HASH;
+            Router::render('forgottenPwd.php', ['log' => null, 'errors' => $errors]);
+        }
+        // Chiffrer le nouveau mot de passe.
+        $user->pwd = password_hash($pwd, PASSWORD_DEFAULT);
+        // Supprimer le hash et le timeout.
+        $user->pwdHash = null;
+        $user->pwdTimeout = null;
+        // Persister.
+        $user->persist();
+        // Inscrire l'utilisateur dans la session.
+        $_SESSION['idUser'] = $user->idUser;
+        // Envoyer un email de confirmation.
+        $subject = 'ACME : Changement de votre mot de passe';
+        $body = "Bonjour,
+Votre mot de passe a été modifié avec succès !";
+        mail($user->email, $subject, $body);
         // Rediriger vers l'accueil.
         Router::redirect('/');
     }

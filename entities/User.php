@@ -33,6 +33,16 @@ class User extends ORMDB implements UserLoggable
     public ?string $pwd = null;
 
     /**
+     * Hash pour réinitialisation du mot de passe.
+     */
+    public ?string $pwdHash = null;
+
+    /**
+     * Timeout pour réinitialisation du mot de passe.
+     */
+    public ?string $pwdTimeout = null;
+
+    /**
      * Nom.
      */
     public ?string $lastName = null;
@@ -41,6 +51,11 @@ class User extends ORMDB implements UserLoggable
      * Prénom.
      */
     public ?string $firstName = null;
+
+    /**
+     * Email.
+     */
+    public ?string $email = null;
 
     /**
      * Instance de l'utilisateur en session.
