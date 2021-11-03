@@ -32,7 +32,12 @@ final class TestController
 	 */
 	public static function test(): void
 	{
-		Router::render('test.php');
+		$categories = Category::findAllBy([], ['name' => 'ASC']);
+		foreach($categories as $category) {
+			$category->products;
+		}
+		// var_dump($categories);
+		Router::render('test.php', ['categories' => $categories]);
 	}
 
 	/**
@@ -56,5 +61,10 @@ final class TestController
 		}
 		// Envoyer le tableau encodé en JSON.
 		Router::json(json_encode($products));
+	}
+
+	public static function select(): void
+	{
+		
 	}
 }

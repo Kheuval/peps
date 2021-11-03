@@ -97,5 +97,10 @@
 		"params": [
 			"value"
 		]
+	},
+	{
+		"verb": "GET",
+		"uri": "/testy/select",
+		"method": "TestController.select"
 	}
 ]

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace entities;
 
+use JsonSerializable;
 use peps\core\DBAL;
 use peps\core\ORMDB;
 
@@ -14,7 +15,7 @@ use peps\core\ORMDB;
  * @see DBAL
  * @see ORMDB
  */
-class Category extends ORMDB
+class Category extends ORMDB implements JsonSerializable
 {
     /**
      * PK de la catégorie.
@@ -51,5 +52,18 @@ class Category extends ORMDB
             $this->products = Product::findAllBy(['idCategory' => $this->idCategory], ['name' => 'ASC']);
         }
         return $this->products;
+    }
+
+    /**
+     * Appelé par json_encode().
+     * Spécifie les propriétés qui seront sérialisées en JSON.
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'idCategory' => $this->idCategory,
+            'name' => $this->name,
+            'products' => $this->products
+        ];
     }
 }
