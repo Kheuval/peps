@@ -33,10 +33,9 @@ final class TestController
 	public static function test(): void
 	{
 		$categories = Category::findAllBy([], ['name' => 'ASC']);
-		foreach($categories as $category) {
+		foreach ($categories as $category) {
 			$category->products;
 		}
-		// var_dump($categories);
 		Router::render('test.php', ['categories' => $categories]);
 	}
 
@@ -55,16 +54,11 @@ final class TestController
 			$q = "SELECT * FROM product WHERE name LIKE :value ORDER BY name";
 			$paramsSQL = [':value' => "%{$value}%"];
 			$products = DBAL::get()->xeq($q, $paramsSQL)->findAll(Product::class);
-		// Sinon, retourner un tableau vide.
 		} else {
+			// Sinon, retourner un tableau vide.
 			$products = [];
 		}
 		// Envoyer le tableau encodé en JSON.
 		Router::json(json_encode($products));
-	}
-
-	public static function select(): void
-	{
-		
 	}
 }

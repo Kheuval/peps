@@ -58,12 +58,8 @@ class Category extends ORMDB implements JsonSerializable
      * Appelé par json_encode().
      * Spécifie les propriétés qui seront sérialisées en JSON.
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        return [
-            'idCategory' => $this->idCategory,
-            'name' => $this->name,
-            'products' => $this->products
-        ];
+        return get_object_vars($this);
     }
 }

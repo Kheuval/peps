@@ -1,5 +1,5 @@
-function test() {
-    let url = `/testy/autocomplete/${autocomplete.value}`
+function autoComplete() {
+    let url = `/testy/autocomplete/${searchBar.value}`
     fetch(url)
         .then(response => {
             if (!response.ok) {
@@ -9,19 +9,19 @@ function test() {
         })
         .then(products => {
             // Supprimer le contenu de la div englobante.
-            out.innerHTML = '';
+            autoCompleteResults.innerHTML = '';
             // Créer une sous-div englobante.
             let div = document.createElement('div');
             div.id = 'results';
             // Si valeur saisie mais aucun résultat, l'afficher.
-            if (autocomplete.value && !products.length) {
+            if (searchBar.value && !products.length) {
                 // Créer un p.
                 let p = document.createElement('p');
                 p.textContent = 'Aucun résultat';
                 // Ajouter le p en enfant de la div.
                 div.appendChild(p);
                 // Ajouter la sous-div en enfant de la div englobante.
-                out.appendChild(div);
+                autoCompleteResults.appendChild(div);
             }
             div.style.transformOrigin = 'top';
             div.animate([
@@ -40,7 +40,7 @@ function test() {
                 // Ajouter le p en enfant de la div.
                 div.appendChild(p);
                 // Ajouter la sous-div en enfant de la div englobante.
-                out.appendChild(div);
+                autoCompleteResults.appendChild(div);
             }
         });
 }

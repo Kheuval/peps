@@ -21,11 +21,11 @@ namespace views;
 <body>
     <main>
         <div class="category">
-            <input id="autocomplete" type="text" oninput="test()">
-            <div id="out"></div>
+            <input id="searchBar" type="text" oninput="autoComplete()">
+            <div id="autoCompleteResults"></div>
         </div>
         <div class="category">
-            <select name="categories" onchange="select()" id="selectCategories">
+            <select id="selectCategories" name="categories" onchange="select()">
                 <option value="0">Choisissez une catégorie</option>
                 <?php foreach ($categories as $category) { ?>
                     <option value="<?= $category->idCategory ?>"><?= $category->name ?></option>
@@ -34,7 +34,7 @@ namespace views;
             <div id="outy"></div>
         </div>
     </main>
-    <script src="../assets/js/test.js"></script>
+    <script src="../assets/js/autoComplete.js"></script>
     <script>
         let categories = <?= json_encode($categories) ?>
     </script>

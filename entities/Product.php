@@ -140,15 +140,8 @@ class Product extends ORMDB implements Validator, JsonSerializable
      * Appelé par json_encode().
      * Spécifie les propriétés qui seront sérialisées en JSON.
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        return [
-            'idProduct' => $this->idProduct,
-            'idCategory' => $this->idCategory,
-            'name' => $this->name,
-            'ref' => $this->ref,
-            'price' => $this->price,
-            'category' => $this->category
-        ];
+        return get_object_vars($this);
     }
 }
