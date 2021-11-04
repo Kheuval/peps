@@ -5,7 +5,7 @@ function select() {
             let selectProducts = document.createElement('select');
             selectProducts.id = "selectProducts";
             for (product of category.products) {
-                selectProducts.options[selectProducts.options.length] = new Option(product.name, product.price);
+                selectProducts.options[selectProducts.options.length] = new Option(product.name, product.idProduct);
             }
             outy.appendChild(selectProducts);
         }
