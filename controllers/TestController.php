@@ -29,7 +29,9 @@ final class TestController
 	 */
 	public static function test(): void
 	{
+		// Récupérer toutes les catégories.
 		$categories = Category::findAllBy([], ['name' => 'ASC']);
+		// Pour chaque catégorie, déclencher le lazy loading.
 		foreach ($categories as $category) {
 			$category->products;
 		}

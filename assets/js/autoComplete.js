@@ -1,4 +1,7 @@
+"use strict";
 function autoComplete() {
+    searchBar.addEventListener('focusout', () => autoCompleteResults.innerHTML = '');
+    searchBar.addEventListener('focus', () => autoComplete());
     let url = `/testy/autocomplete/${searchBar.value}`
     fetch(url)
         .then(response => {
@@ -32,7 +35,7 @@ function autoComplete() {
                 iterations: 1
             });
             // Pour chaque produit...
-            for (product of products) {
+            for (let product of products) {
                 // Créer un p.
                 let p = document.createElement('p');
                 // Définir son contenu.

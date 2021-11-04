@@ -1,13 +1,17 @@
+"use strict";
 function select() {
-    outy.innerHTML = '';
-    for (category of categories) {
-        if (category.idCategory === parseInt(selectCategories.value, 10)) {
+    out.innerHTML = '';
+    for (let category of categories) {
+        if (category.idCategory === parseInt(idCategory.value, 10)) {
+            let label = document.createElement('label');
+            label.textContent = "Produits : ";
             let selectProducts = document.createElement('select');
             selectProducts.id = "selectProducts";
-            for (product of category.products) {
+            for (let product of category.products) {
                 selectProducts.options[selectProducts.options.length] = new Option(product.name, product.idProduct);
             }
-            outy.appendChild(selectProducts);
+            out.appendChild(label);
+            out.appendChild(selectProducts);
         }
     }
 }
