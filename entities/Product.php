@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace entities;
 
-use JsonSerializable;
 use peps\core\DBAL;
 use peps\core\ORMDB;
 use peps\core\Validator;
@@ -16,7 +15,7 @@ use peps\core\Validator;
  * @see DBAL
  * @see ORMDB
  */
-class Product extends ORMDB implements Validator, JsonSerializable
+class Product extends ORMDB implements Validator
 {
     // Messages d'erreur.
     protected const ERR_INVALID_PK = "Clé primaire invalide";
@@ -134,14 +133,5 @@ class Product extends ORMDB implements Validator, JsonSerializable
         $product = self::findOneBy(['ref' => $this->ref]);
         // Ne pas compter celui qui aurait le même idProduct.
         return (bool) $product && $this->idProduct != $product->idProduct;
-    }
-
-    /**
-     * Appelé par json_encode().
-     * Spécifie les propriétés qui seront sérialisées en JSON.
-     */
-    public function jsonSerialize(): array
-    {
-        return get_object_vars($this);
     }
 }

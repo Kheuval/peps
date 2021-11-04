@@ -6,11 +6,8 @@ namespace controllers;
 
 use entities\Category;
 use entities\Product;
-use entities\User;
 use peps\core\DBAL;
-use peps\core\ORMDB;
 use peps\core\Router;
-use stdClass;
 
 /**
  * Classe 100% statique.

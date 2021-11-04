@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace peps\core;
 
 use Error;
+use JsonSerializable;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -20,7 +21,7 @@ use ReflectionProperty;
  * 3. Chaque colonne correspond à une propriété PUBLIC du même nom. Les autres propriétés NE sont pas PUBLIC
  * 4. Si une propriété 'trucChose' est inaccessible, la méthode 'getTrucChose' sera invoquée si elle existe. Sinon null sera retourné.
  */
-class ORMDB implements ORM
+class ORMDB implements ORM, JsonSerializable
 {
     /**
      * Hydrate l'entité depuis le système de stockage.
@@ -178,5 +179,14 @@ class ORMDB implements ORM
         } catch (Error $e) {
             return null;
         }
+    }
+
+    /**
+     * Appelé par json_encode().
+     * Spécifie les propriétés qui seront sérialisées en JSON.
+     */
+    public function jsonSerialize(): array
+    {
+        return get_object_vars($this);
     }
 }
