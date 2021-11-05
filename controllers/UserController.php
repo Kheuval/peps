@@ -15,10 +15,10 @@ use peps\core\Router;
  */
 final class UserController
 {
-	// Messages d'erreur.
-	private const ERR_LOGIN = "Identifiant ou mot de passe absents ou invalides.";
-	private const ERR_INVALID_LOG = "Identifiant absent ou invalide.";
-	private const ERR_INVALID_HASH = "Lien invalide ou expiré.";
+    // Messages d'erreur.
+    private const ERR_LOGIN = "Identifiant ou mot de passe absents ou invalides.";
+    private const ERR_INVALID_LOG = "Identifiant absent ou invalide.";
+    private const ERR_INVALID_HASH = "Lien invalide ou expiré.";
 
     /**
      * Constructeur privé.
@@ -37,6 +37,43 @@ final class UserController
     {
         // Rendre la vue.
         Router::render('signin.php', ['log' => null]);
+    }
+
+    /**
+     * Affiche le formulaire d'inscription.
+     *
+     * GET /user/signup
+     */
+    public static function signup(): void
+    {
+        Router::render('signup.php', ['user' => new User()]);
+    }
+
+    /**
+     * Inscrit l'utilisateur si possible puis redirige.
+     * 
+     * POST user/save
+     */
+    public static function save(): void
+    {
+        // Prévoir le tableau des messages d'erreur.
+        $errors = [];
+        // Créer un nouvel utilisateur.
+        $user = new User();
+        // Récupérer les données POST (on rajoute ?: null car filter_input peut retourner false).
+        $user->log = filter_input(INPUT_POST, 'log', FILTER_SANITIZE_STRING) ?: null;
+        $user->lastName = filter_input(INPUT_POST, 'lastName', FILTER_SANITIZE_STRING) ?: null;
+        $user->firstName = filter_input(INPUT_POST, 'firstName', FILTER_SANITIZE_STRING) ?: null;
+        $user->email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?: null;
+        $user->pwd = filter_input(INPUT_POST, 'pwd', FILTER_SANITIZE_STRING) ?: null;
+        // Si données valides, chiffré le mot de passe, persister et rediriger.
+        if ($user->validate($errors)) {
+            $user->pwd = password_hash($user->pwd, PASSWORD_DEFAULT);
+            $user->persist();
+            Router::redirect('/user/signin');
+        }
+        // Sinon, afficher de nouveau le formulaire avec le message d'erreur.
+        Router::render('signup.php', ['user' => $user, 'errors' => $errors]);
     }
 
     /**
@@ -86,37 +123,37 @@ final class UserController
         Router::render('forgottenPwd.php', ['log' => null]);
     }
 
-	/**
-	 * Génère et envoie par email un lien destiné à saisir un nouveau mot de passe.
-	 *
-	 * GET /user/newPwd
-	 */
-	public static function newPwd(): void
-	{
-		// Initialiser le tableau des messages d'erreur.
-		$errors = [];
-		// Récupérer 'log'.
-		$log = filter_input(INPUT_POST, 'log', FILTER_SANITIZE_STRING) ?: null;
-		// Si 'log' inconnu, rendre la vue 'forgottenPwd.php'.
-		if (!$user = User::findOneBy(['log' => $log])) {
-			$errors[] = self::ERR_INVALID_LOG;
-			Router::render('forgottenPwd.php', ['log' => $log, 'errors' => $errors]);
-		}
-		// Générer un hash.
-		$hash = hash('sha1', microtime(), false);
-		// Stocker le hash et son timeout en DB.
-		$user->pwdHash = $hash;
-		$user->pwdTimeout = date('Y-m-d H:i:s', time() + 10 * 60);
-		$user->persist();
-		// Envoyer le lien par email.
-		$subject = 'ACME : Réinitialiser votre mot de passe';
-		$body = "Bonjour,
+    /**
+     * Génère et envoie par email un lien destiné à saisir un nouveau mot de passe.
+     *
+     * GET /user/newPwd
+     */
+    public static function newPwd(): void
+    {
+        // Initialiser le tableau des messages d'erreur.
+        $errors = [];
+        // Récupérer 'log'.
+        $log = filter_input(INPUT_POST, 'log', FILTER_SANITIZE_STRING) ?: null;
+        // Si 'log' inconnu, rendre la vue 'forgottenPwd.php'.
+        if (!$user = User::findOneBy(['log' => $log])) {
+            $errors[] = self::ERR_INVALID_LOG;
+            Router::render('forgottenPwd.php', ['log' => $log, 'errors' => $errors]);
+        }
+        // Générer un hash.
+        $hash = hash('sha1', microtime(), false);
+        // Stocker le hash et son timeout en DB.
+        $user->pwdHash = $hash;
+        $user->pwdTimeout = date('Y-m-d H:i:s', time() + 10 * 60);
+        $user->persist();
+        // Envoyer le lien par email.
+        $subject = 'ACME : Réinitialiser votre mot de passe';
+        $body = "Bonjour,
 Veuillez cliquer sur ce lien pour réinitialiser votre mot de passe (ce lien expire dans 10 minutes)
 http://acmepeps.local/user/setPwd/{$hash}";
-		mail($user->email, $subject, $body);
-		// Rediriger vers l'accueil'.
-		Router::redirect('/');
-	}
+        mail($user->email, $subject, $body);
+        // Rediriger vers l'accueil'.
+        Router::redirect('/');
+    }
 
     /**
      * Affiche la vue permettant de saisir un nouveau mot de passe.

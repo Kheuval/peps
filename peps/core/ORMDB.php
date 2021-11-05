@@ -56,23 +56,24 @@ class ORMDB implements ORM, JsonSerializable
         $pkName = "id{$className}";
         // Récupérer le tableau des propriétés publiques de la classe.
         $properties = $rc->getProperties(ReflectionProperty::IS_PUBLIC);
-        // Initialiser les chaînes SQL et les paramètres SQL.
-        $strUpdate = "UPDATE {$tableName} SET ";
-        $strInsert = "INSERT INTO {$tableName} VALUES(";
+        // Initialiser les éléments de requête et le tableau des paramètres.
+        $strInsertColumns = $strInsertValues = $strUpdate = '';
         $params = [];
         // Pour chaque propriété, récupérer son nom pour construire une partie des requêtes SQL INSERT et UPDATE.
         foreach ($properties as $property) {
             $propertyName = $property->getName();
-            $strInsert .= ":{$propertyName},";
+            $strInsertColumns .= "{$propertyName},";
+            $strInsertValues .= ":{$propertyName},";
             $strUpdate .= "{$propertyName} = :{$propertyName},";
             $params[":{$propertyName}"] = $this->$propertyName;
         }
         // Supprimer la dernière virgule de chaque requête.
-        $strInsert = rtrim($strInsert, ',');
+        $strInsertColumns = rtrim($strInsertColumns, ',');
+        $strInsertValues = rtrim($strInsertValues, ',');
         $strUpdate = rtrim($strUpdate, ',');
-        // Finir de compléter les requêtes.
-        $strInsert .= ')';
-        $strUpdate .= " WHERE {$pkName} = :__ID__";
+        // Créer les requêtes SQL et les paramètres SQL.
+        $strInsert = "INSERT INTO {$tableName} ({$strInsertColumns}) VALUES({$strInsertValues})";
+        $strUpdate = "UPDATE {$tableName} SET {$strUpdate} WHERE {$pkName} = :__ID__";
         // Finir de compléter les tableaux de paramètres.
         $paramsInsert = $paramsUpdate = $params;
         $paramsUpdate[':__ID__'] = $this->$pkName;
