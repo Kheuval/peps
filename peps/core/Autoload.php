@@ -24,6 +24,7 @@ final class Autoload
     public static function init(): void
     {
         // Inscrire la fonction d'autoload dans la pile d'autoload.
-        spl_autoload_register(fn ($className) => require $className . '.php');
+        $documentRoot = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT', FILTER_SANITIZE_STRING);
+        spl_autoload_register(fn ($className) => require $documentRoot . DIRECTORY_SEPARATOR . strtr($className, '\\', DIRECTORY_SEPARATOR) . '.php');
     }
 }
